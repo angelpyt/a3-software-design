@@ -10,9 +10,12 @@ function donut() {
 		width = 720,
 		height = 540,
 		color = d3.scaleOrdinal(d3.schemeCategory20c),
+		legendSize = 18,
+		legendSpacing = 4,
 		key,
 		value;
-		
+	
+
 	// Internal function that gets returned
 	function chart(selection) {
 
@@ -30,21 +33,51 @@ function donut() {
 
 	     	// Construct an arc
 	     	var arc = d3.arc()
-	     			.outerRadius(radius)
-	     			.innerRadius(radius / 2);
+	     			.outerRadius(radius / 2)
+	     			.innerRadius(radius / 4);
 
             var svg = selection.append('svg')
                 .attr('width', width)
                 .attr('height', height)
-                .append('g')
-                .attr("transform", "translate(" + width / 2  + "," + height / 2 + ")");
+            
+            var g = svg.append('g')
+            			.attr("transform", "translate(" + width / 2  + "," + height / 2 + ")");
 
-            var path = svg.selectAll('path')
+            // draw each donut chart slice
+            var path = g.selectAll('path')
             			.data(pie(data))
             			.enter()
             			.append('path')
             			.attr('fill', function(d) { return color(d.data[key]); })
             			.attr('d', arc);
+
+		    // add legend
+	        var legendRectSize = 18;
+			var legendSpacing = 4;
+			var legend = svg.append('g')
+				.attr("transform", "translate(" + margin.left  + "," + margin.top + ")")
+				.selectAll('.legend')
+				.data(pie(data))
+		    	.enter()
+		    	.append('g')
+		    	.attr('class', 'legend')
+		    	.attr('transform', function(d, i) {
+					var height = legendSize + legendSpacing;
+					var x = legendRectSize;
+					var y = i * height;
+					return 'translate(' + x + ',' + y + ')';
+		    	});
+		    	      
+		   	legend.append('rect')
+		    	.attr('width', legendSize)
+		    	.attr('height', legendSize)
+		    	.style('fill', function(d) { return color(d.data[key]); })
+		    	.style('stroke', function(d) { return color(d.data[key]); });
+		    	      
+		   	legend.append('text')
+		    	.attr('x', legendSize + legendSpacing)
+		    	.attr('y', legendSize - legendSpacing)
+		    	.text(function(d) { return d.data[key] + ": " + d.value; });
 		});
 	}
 
@@ -83,6 +116,18 @@ function donut() {
     chart.value = function(inputValue) {
         if (!arguments.length) return value;
         value = inputValue;
+        return chart;
+    };
+
+    chart.legendSize = function(value) {
+        if (!arguments.length) return legendSize;
+        legendSize = value;
+        return chart;
+    };
+
+    chart.legendSpacing = function(value) {
+        if (!arguments.length) return legendSpacing;
+        legendSpacing = value;
         return chart;
     };
 
