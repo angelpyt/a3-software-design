@@ -14,5 +14,24 @@
 </head>
 <body>
 	<div id="my-chart"></div>
+
+	<!-- Test -->
+	<script type="text/javascript">
+        var dataset = [
+			{sala: "Lactantes", value: 74},
+			{sala: "Deambuladores", value: 85},
+			{sala: "2 años", value: 840},
+			{sala: "Primera sección", value: 4579},   
+			{sala: "Segunda sección", value: 5472},
+			{sala: "Tercera sección", value: 7321},
+        ];
+
+
+		var myChart = donut().key('sala').radiiRatio(5).value("value");
+
+		var chartWrapper = d3.select('#my-chart')
+							.datum(dataset)
+							.call(myChart);
+	</script>
 </body>
 </html>

@@ -12,6 +12,7 @@ function donut() {
 		color = d3.scaleOrdinal(d3.schemeCategory20c),
 		legendSize = 18,
 		legendSpacing = 4,
+		radiiRatio = 2,
 		key,
 		value;
 	
@@ -25,7 +26,7 @@ function donut() {
 
 	     	// Create a new pie chart
             var pie = d3.pie()
-                .value(function(d) { return +d.value; })
+                .value(function(d) { return +d[value]; })
 				.sort(null);
 
 	     	// Construct radius
@@ -33,8 +34,8 @@ function donut() {
 
 	     	// Construct an arc
 	     	var arc = d3.arc()
-	     			.outerRadius(radius / 2)
-	     			.innerRadius(radius / 4);
+	     			.outerRadius(radius)
+	     			.innerRadius(radius / radiiRatio);
 
             var svg = selection.append('svg')
                 .attr('width', width)
@@ -52,8 +53,6 @@ function donut() {
             			.attr('d', arc);
 
 		    // add legend
-	        var legendRectSize = 18;
-			var legendSpacing = 4;
 			var legend = svg.append('g')
 				.attr("transform", "translate(" + margin.left  + "," + margin.top + ")")
 				.selectAll('.legend')
@@ -63,7 +62,7 @@ function donut() {
 		    	.attr('class', 'legend')
 		    	.attr('transform', function(d, i) {
 					var height = legendSize + legendSpacing;
-					var x = legendRectSize;
+					var x = legendSize;
 					var y = i * height;
 					return 'translate(' + x + ',' + y + ')';
 		    	});
@@ -77,7 +76,7 @@ function donut() {
 		   	legend.append('text')
 		    	.attr('x', legendSize + legendSpacing)
 		    	.attr('y', legendSize - legendSpacing)
-		    	.text(function(d) { return d.data[key] + ": " + d.value; });
+		    	.text(function(d) { return d.data[key] + ": " + d[value]; });
 		});
 	}
 
@@ -103,7 +102,13 @@ function donut() {
 
     chart.color = function(value) {
         if (!arguments.length) return color;
-        color = value;
+        color = d3.scaleOrdinal(value);
+        return chart;
+    };
+
+    chart.radiiRatio = function(value) {
+        if (!arguments.length) return radiiRatio;
+        radiiRatio = value;
         return chart;
     };
 
